@@ -6,26 +6,23 @@ import { services } from "../data/services";
 const HomeScreen = () => {
   return (
     <View className="flex-1 bg-white p-4">
-      
       <AppHeader />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerClassName="pt-6 pb-28"
       >
-        <View className="flex-row flex-wrap justify-between gap-4">
-          {services.map((item) => (
+        <View className="flex-row flex-wrap px-4 pt-4">
+          {services.map((service, index) => (
             <ServiceCard
-              key={item.id}
-              title={item.title}
-              subtitle={item.subtitle}
-              icon={item.icon}
+              key={service.id}
+              title={service.title}
+              icon={service.icon}
+              index={index}
             />
           ))}
         </View>
       </ScrollView>
-
-
     </View>
   );
 };

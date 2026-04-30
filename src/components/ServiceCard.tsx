@@ -1,23 +1,73 @@
 import { Pressable, Text, View } from "react-native";
+import {
+  Plane,
+  Hotel,
+  BadgeCheck,
+  Palmtree,
+  Landmark,
+  CircleDollarSign,
+  GraduationCap,
+  ClipboardList,
+  School,
+  ShoppingBag,
+  HelpCircle,
+} from "lucide-react-native";
+
+import type { ServiceIconName } from "../types/service.types";
 
 type Props = {
   title: string;
-  subtitle: string;
-  icon: string;
+  icon: ServiceIconName;
+  index?: number;
 };
 
-const ServiceCard = ({ title, subtitle, icon }: Props) => {
-  return (
-    <Pressable className="w-[48%] md:w-[31%] min-h-28 rounded-2xl border border-primary-light/30 bg-white p-4 flex-row items-center active:scale-95">
-      <View className="h-12 w-12 rounded-xl bg-primary-light/30 items-center justify-center mr-3">
-        <Text className="text-xl">{icon}</Text>
-      </View>
+const iconMap = {
+  flight: Plane,
+  hotel: Hotel,
+  visa: BadgeCheck,
+  holiday: Palmtree,
+  hajj: Landmark,
+  umrah: CircleDollarSign,
+  course: GraduationCap,
+  test: ClipboardList,
+  university: School,
+  shop: ShoppingBag,
+} as const;
 
-      <View className="flex-1">
-        <Text className="text-primary font-semibold text-sm">{title}</Text>
-        <Text className="text-gray-500 text-xs mt-1">{subtitle}</Text>
-      </View>
-    </Pressable>
+const colors = [
+  "#EF6C73",
+  "#4CAF50",
+  "#14B8A6",
+  "#F59E0B",
+  "#9C27B0",
+  "#607D8B",
+  "#EC4899",
+  "#F472B6",
+  "#38BDF8",
+  "#22C55E",
+];
+
+const ServiceCard = ({ title, icon, index = 0 }: Props) => {
+  const Icon = iconMap[icon] ?? HelpCircle;
+  const color = colors[index % colors.length];
+
+  return (
+    <View
+      className="mb-6 w-1/4 items-center"
+    >
+      <Pressable className="items-center active:scale-95">
+        <View className="mb-2 h-11 w-11 items-center justify-center">
+          <Icon size={34} color={color} strokeWidth={1.8} />
+        </View>
+
+        <Text
+          numberOfLines={2}
+          className="text-center text-[11px] font-medium text-gray-700"
+        >
+          {title}
+        </Text>
+      </Pressable>
+    </View>
   );
 };
 
