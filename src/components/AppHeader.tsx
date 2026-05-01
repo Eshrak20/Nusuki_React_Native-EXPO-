@@ -1,36 +1,42 @@
-import { View, Text, Pressable } from "react-native";
-import { User, LogIn } from "lucide-react-native";
+import { View, Text, ImageBackground, Dimensions } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+
+const { width } = Dimensions.get("window");
+
+const banner = require("../../assets/banner.png");
 
 const AppHeader = () => {
   return (
-    <View className="flex-row items-center justify-between bg-white rounded-2xl border border-primary-light/30 px-4 py-3 mx-2 mt-2 shadow-sm">
-      
-      {/* Left: Profile */}
-      <Pressable className="flex-row items-center bg-primary-light/20 px-3 py-2 rounded-xl">
-        <User size={16} color="#13275F" />
-        <Text className="ml-2 text-primary font-semibold text-sm">
-          Eshrak
-        </Text>
-      </Pressable>
+    <View
+      style={{ width }}
+      className="h-72 overflow-hidden rounded-b-[36px] bg-primary"
+    >
+      <ImageBackground
+        source={banner}
+        resizeMode="cover"
+        style={{ width: "100%", height: "100%" }}
+      >
+        <LinearGradient
+          colors={[
+            "rgba(19,39,95,0.45)",
+            "rgba(19,39,95,0.35)",
+            "rgba(19,39,95,0.85)",
+          ]}
+          className="flex-1 items-center justify-center px-6"
+        >
+          <Text className="text-white/80 text-xs uppercase tracking-[5px] mb-3">
+            Welcome To
+          </Text>
 
-      {/* Center: Title */}
-      <View className="items-center">
-        <Text className="text-xs text-gray-400 uppercase tracking-widest">
-          Welcome to
-        </Text>
-        <Text className="text-primary font-bold text-base">
-          NusukiApp
-        </Text>
-      </View>
+          <Text className="text-white text-5xl font-extrabold text-center">
+            NusukiApp
+          </Text>
 
-      {/* Right: Login */}
-      <Pressable className="flex-row items-center bg-primary px-4 py-2 rounded-xl">
-        <Text className="text-white font-semibold text-sm mr-1">
-          Login
-        </Text>
-        <LogIn size={14} color="white" />
-      </Pressable>
-
+          <Text className="mt-4 text-white/90 text-center text-base leading-6">
+            Explore your journey with a smarter travel experience
+          </Text>
+        </LinearGradient>
+      </ImageBackground>
     </View>
   );
 };

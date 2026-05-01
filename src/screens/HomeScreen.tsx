@@ -2,11 +2,17 @@ import { ScrollView, View } from "react-native";
 import AppHeader from "../components/AppHeader";
 import ServiceCard from "../components/ServiceCard";
 import { services } from "../data/services";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 
 const HomeScreen = () => {
   return (
-    <View className="flex-1 bg-white p-4">
-      <AppHeader />
+    <View className="flex-1 bg-white">
+      <StatusBar style="light" backgroundColor="#13275F" />
+
+      <SafeAreaView edges={["top"]} className="bg-primary">
+        <AppHeader />
+      </SafeAreaView>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
