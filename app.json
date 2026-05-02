@@ -4,12 +4,12 @@
     "slug": "Nusuki_React_Native",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/nusukiApp.png",
     "scheme": "myapp",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/nusukiSplash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -19,7 +19,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/nusukiApp.png",
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
@@ -27,7 +27,7 @@
       "package": "com.eshrakg.Nusuki_React_Native"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/nusukiApp.png"
     },
     "plugins": [
       "expo-router"
