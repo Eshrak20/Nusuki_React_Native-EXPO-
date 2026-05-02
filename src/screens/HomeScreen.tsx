@@ -25,6 +25,7 @@ const HomeScreen = () => {
               title={service.title}
               icon={service.icon}
               index={index}
+              route={service.route}
             />
           ))}
         </View>

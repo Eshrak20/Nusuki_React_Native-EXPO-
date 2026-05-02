@@ -14,4 +14,5 @@ export type ServiceItem = {
   id: number;
   title: string;
   icon: ServiceIconName;
+  route: string;
 };

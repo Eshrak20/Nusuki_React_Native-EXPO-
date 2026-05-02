@@ -1,10 +1,12 @@
 import { configureStore } from "@reduxjs/toolkit";
-import counterReducer from "../features/counter/counterSlice";
+import { laravelApi } from "./api/laravelApi";
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer,
+    [laravelApi.reducerPath]: laravelApi.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(laravelApi.middleware),
 });
 
 export type RootState = ReturnType<typeof store.getState>;
