@@ -8,6 +8,8 @@ import type {
   VisaQueryParams,
 } from "../../types/visa/types.visaPackage";
 import { UniversityApiResponse, UniversityQueryParams } from "../../types/education/types.university";
+import { CourseApiResponse, CourseQueryParams } from "../../types/education/types.course";
+import { TestPreparationQueryParams, TestPreparationsApiResponse } from "../../types/education/types.test";
 
 export const packagesApi = laravelApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -48,6 +50,28 @@ export const packagesApi = laravelApi.injectEndpoints({
         },
       }),
     }),
+    getCourses: builder.query<CourseApiResponse, CourseQueryParams>({
+      query: ({ page = 1, size = 12, study_level = "", keyword = "" }) => ({
+        url: "/courses",
+        method: "GET",
+        params: {
+          page,
+          size,
+          study_level,
+          keyword,
+        },
+      }),
+    }),
+    getTests: builder.query<TestPreparationsApiResponse,TestPreparationQueryParams>({
+      query: ({ page = 1, examType = "" }) => ({
+        url: "/test-preparations",
+        method: "GET",
+        params: {
+          page,
+          examType,
+        },
+      }),
+    }),
   }),
 
   overrideExisting: false,
@@ -58,4 +82,6 @@ export const {
   useGetUmrahPackagesQuery,
   useGetVisasQuery,
   useGetUniversitiesQuery,
+  useGetCoursesQuery,
+  useGetTestsQuery
 } = packagesApi;

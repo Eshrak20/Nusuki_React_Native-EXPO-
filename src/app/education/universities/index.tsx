@@ -53,7 +53,6 @@ export default function UniversityListScreen() {
     page,
     resetKey,
     currentItems,
-    getId: (item) => item.id,
   });
 
   const handleLoadMore = () => {

@@ -39,3 +39,13 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+# Android builds
+*.apk
+*.aab
+
+# iOS builds
+*.ipa
+
+# Expo specific
+android/build/
+ios/build/
