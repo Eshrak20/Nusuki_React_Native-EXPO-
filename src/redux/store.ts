@@ -1,8 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { laravelApi } from "./api/laravelApi";
-
+import flightSearchReducer from "./features/flightSearchSlice";
 export const store = configureStore({
   reducer: {
+    flightSearch: flightSearchReducer,
     [laravelApi.reducerPath]: laravelApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>

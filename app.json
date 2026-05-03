@@ -29,7 +29,19 @@
     "web": {
       "favicon": "./assets/nusukiApp.png"
     },
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/nusukiSplash.png",
+          "backgroundColor": "#FFFFFF",
+          "resizeMode": "cover",
+          "imageWidth": 390
+        }
+      ]
+    ],
+
     "extra": {
       "router": {},
       "eas": {
