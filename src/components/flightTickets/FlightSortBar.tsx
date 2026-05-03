@@ -1,13 +1,18 @@
-import { Text, TouchableOpacity, View } from "react-native";
+import React from "react";
+import { Text, TouchableOpacity, View, Dimensions } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../redux/store";
 import { setSort } from "../../redux/features/flightTicketSlice";
 import type { SortBy } from "../../types/flight/types.flightResults";
+// Install lucide-react-native if you haven't: npm install lucide-react-native
+import { Clock, Tag, Zap } from "lucide-react-native";
 
-const sortItems: { label: string; value: SortBy; sub: string }[] = [
-  { label: "Earliest", value: "departure_at", sub: "Departure" },
-  { label: "Cheapest", value: "price", sub: "Best Price" },
-  { label: "Fastest", value: "duration", sub: "Duration" },
+const { width } = Dimensions.get("window");
+
+const sortItems: { label: string; value: SortBy; icon: any }[] = [
+  { label: "Cheapest", value: "price", icon: Tag },
+  { label: "Fastest", value: "duration", icon: Zap },
+  { label: "Earliest", value: "departure_at", icon: Clock },
 ];
 
 const FlightSortBar = () => {
@@ -15,44 +20,50 @@ const FlightSortBar = () => {
   const { sortBy } = useSelector((state: RootState) => state.flightTicket);
 
   return (
-    <View className="absolute bottom-3 left-4 right-4 flex-row rounded-full bg-white p-2 shadow-lg">
-      {sortItems.map((item) => {
-        const isActive = sortBy === item.value;
+    <View className="absolute bottom-8 left-0 right-0 items-center justify-center px-4">
+      <View 
+        style={{ elevation: 10 }}
+        className="flex-row items-center justify-between rounded-3xl bg-white/95 p-1.5 shadow-xl shadow-black/20 border border-gray-100"
+      >
+        {sortItems.map((item) => {
+          const isActive = sortBy === item.value;
+          const Icon = item.icon;
 
-        return (
-          <TouchableOpacity
-            key={item.value}
-            activeOpacity={0.85}
-            onPress={() =>
-              dispatch(
-                setSort({
-                  sortBy: item.value,
-                  sortOrder: "asc",
-                }),
-              )
-            }
-            className={`flex-1 rounded-full py-2 ${
-              isActive ? "bg-primary" : "bg-transparent"
-            }`}
-          >
-            <Text
-              className={`text-center text-sm font-extrabold ${
-                isActive ? "text-white" : "text-gray-800"
+          return (
+            <TouchableOpacity
+              key={item.value}
+              activeOpacity={0.7}
+              onPress={() =>
+                dispatch(
+                  setSort({
+                    sortBy: item.value,
+                    sortOrder: "asc",
+                  }),
+                )
+              }
+              // Responsive width calculation: (Total Width - padding) / 3
+              style={{ width: (width - 60) / 3 }}
+              className={`flex-row items-center justify-center space-x-2 rounded-2xl py-3 transition-all ${
+                isActive ? "bg-primary shadow-sm" : "bg-transparent"
               }`}
             >
-              {item.label}
-            </Text>
-
-            <Text
-              className={`text-center text-[10px] ${
-                isActive ? "text-white/80" : "text-gray-500"
-              }`}
-            >
-              {item.sub}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
+              <Icon 
+                size={16} 
+                color={isActive ? "white" : "#6b7280"} 
+                strokeWidth={2.5} 
+              />
+              <Text
+                numberOfLines={1}
+                className={`text-[13px] font-bold ${
+                  isActive ? "text-white" : "text-gray-500"
+                }`}
+              >
+                {item.label}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
     </View>
   );
 };

@@ -3,12 +3,13 @@ import {
   ActivityIndicator,
   Alert,
   FlatList,
+  ScrollView,
   Text,
   TouchableOpacity,
   View,
 } from "react-native";
 import { router } from "expo-router";
-import { SlidersHorizontal } from "lucide-react-native";
+import { SlidersHorizontal, X } from "lucide-react-native";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState } from "../../../redux/store";
 
@@ -33,6 +34,7 @@ import {
 import { useRateLimitRetry } from "../../../hooks/useRateLimitRetry";
 import { startFlightSession } from "../../../redux/features/flightSessionSlice";
 import useSharedFlightTimer from "../../../hooks/useSharedFlightTimer";
+import { resetFlightTicketFilters } from "../../../redux/features/flightTicketSlice";
 
 const PAGE_SIZE = 10;
 
@@ -70,6 +72,60 @@ export default function FlightTicketsScreen() {
   const allCachedFlights = useMemo(() => {
     return getCachedFlights(cacheState.pageCache);
   }, [cacheState.pageCache]);
+
+  const appliedFilterBadges = useMemo(() => {
+    const filters = ticketState.filters;
+    const badges: string[] = [];
+
+    filters.refundability.forEach((item) => {
+      badges.push(item === "refundable" ? "Refundable" : item);
+    });
+
+    filters.stops.forEach((item) => {
+      badges.push(item === 0 ? "Non Stop" : `${item} Stop`);
+    });
+
+    filters.airlines.forEach((item) => {
+      badges.push(`Airline: ${item}`);
+    });
+
+    filters.layover_cities.forEach((item) => {
+      badges.push(`Layover: ${item}`);
+    });
+
+    filters.aircraft.forEach((item) => {
+      badges.push(`Aircraft: ${item}`);
+    });
+
+    filters.flight_schedules.departure.forEach((item) => {
+      badges.push(`Departure: ${item}`);
+    });
+
+    filters.flight_schedules.arrival.forEach((item) => {
+      badges.push(`Arrival: ${item}`);
+    });
+
+    if (filters.price_min !== null || filters.price_max !== null) {
+      badges.push(
+        `Price: ${filters.price_min ?? "Min"} - ${filters.price_max ?? "Max"}`,
+      );
+    }
+
+    if (
+      filters.layover_duration_min !== null ||
+      filters.layover_duration_max !== null
+    ) {
+      badges.push(
+        `Layover Time: ${filters.layover_duration_min ?? "Min"} - ${
+          filters.layover_duration_max ?? "Max"
+        } min`,
+      );
+    }
+
+    return badges;
+  }, [ticketState.filters]);
+
+  const hasAppliedFilters = appliedFilterBadges.length > 0;
 
   const filteredFlights = useMemo(() => {
     return getClientFilteredFlights({
@@ -137,7 +193,7 @@ export default function FlightTicketsScreen() {
   });
 
   useEffect(() => {
-    dispatch(startFlightSession(28));
+    dispatch(startFlightSession());
   }, [dispatch, searchKey]);
 
   useEffect(() => {
@@ -179,6 +235,10 @@ export default function FlightTicketsScreen() {
     loadPage(nextPage).catch(() => {});
   };
 
+  const handleClearFilters = () => {
+    dispatch(resetFlightTicketFilters());
+  };
+
   const isInitialLoading =
     fetchState.isLoading &&
     cacheState.serverPage === 1 &&
@@ -188,19 +248,70 @@ export default function FlightTicketsScreen() {
     <View className="flex-1 bg-gray-100">
       <FlightTicketHeader title={routeLabel} subtitle="Flight results" />
 
-      <View className="flex-row items-center justify-between px-4 py-4">
-        <Text className="text-base font-extrabold text-gray-900">
-          {totalAvailable} Available Flights
-        </Text>
+      <View className="px-4 py-4">
+        <View className="flex-row items-center justify-between">
+          <View className="flex-1 pr-3">
+            <Text className="text-base font-extrabold text-gray-900">
+              {totalAvailable} Available Flights
+            </Text>
 
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={() => setIsFilterOpen(true)}
-          className="flex-row items-center rounded-full bg-white px-4 py-3 shadow-sm"
-        >
-          <SlidersHorizontal size={17} color="#13275F" />
-          <Text className="ml-2 font-extrabold text-gray-800">All Filters</Text>
-        </TouchableOpacity>
+            {hasAppliedFilters ? (
+              <Text className="mt-1 text-xs font-medium text-gray-500">
+                Showing {sortedFlights.length} after filters
+              </Text>
+            ) : null}
+          </View>
+
+          <View className="flex-row items-center gap-2">
+            {hasAppliedFilters ? (
+              <TouchableOpacity
+                activeOpacity={0.85}
+                onPress={handleClearFilters}
+                className="flex-row items-center rounded-full bg-red-50 px-3 py-3"
+              >
+                <X size={15} color="#EF4444" />
+                <Text className="ml-1 text-xs font-extrabold text-red-500">
+                  Clear
+                </Text>
+              </TouchableOpacity>
+            ) : null}
+
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => setIsFilterOpen(true)}
+              className="flex-row items-center rounded-full bg-white px-4 py-3 shadow-sm"
+            >
+              <SlidersHorizontal size={17} color="#13275F" />
+              <Text className="ml-2 font-extrabold text-gray-800">Filters</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {hasAppliedFilters ? (
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="mt-3"
+            contentContainerClassName="gap-2 pr-4"
+          >
+            {appliedFilterBadges.map((badge) => (
+              <View
+                key={badge}
+                className="relative flex-row items-center rounded-full border border-primary/10 bg-primary/10 px-3 py-2 mt-3 pr-7"
+              >
+                <Text className="text-xs font-bold text-primary">{badge}</Text>
+
+                <TouchableOpacity
+                  activeOpacity={0.85}
+                  onPress={handleClearFilters}
+                  className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-red-500"
+                >
+                  <X size={12} color="#FFFFFF" />
+                </TouchableOpacity>
+              </View>
+            ))}
+          </ScrollView>
+        ) : null}
       </View>
 
       {isInitialLoading ? (

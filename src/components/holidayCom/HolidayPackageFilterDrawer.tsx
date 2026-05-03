@@ -151,7 +151,7 @@ const HolidayPackageFilterDrawer = ({
             })}
           </ScrollView>
 
-          <View className="absolute bottom-0 left-0 right-0 flex-row gap-3 border-t border-gray-100 bg-white px-5 py-4">
+          <View className="absolute bottom-5 left-0 right-0 flex-row gap-3 border-t border-gray-100 bg-white px-5 py-4">
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={onClear}

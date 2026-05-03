@@ -16,6 +16,7 @@ const flightSessionSlice = createSlice({
   reducers: {
     startFlightSession: (state, action: PayloadAction<number | undefined>) => {
       const minutes = action.payload ?? FLIGHT_SESSION_MINUTES;
+      console.log("Starting session with minutes:", minutes);
       state.expiresAt = Date.now() + minutes * 60 * 1000;
     },
 

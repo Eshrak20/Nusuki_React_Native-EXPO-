@@ -44,10 +44,11 @@ const FlightFilterDrawer = ({
 
         <View className="h-full w-[86%] rounded-l-3xl bg-white">
           <View className="flex-row items-center justify-between border-b border-gray-100 px-5 py-4">
-            <View>
+            <View className="mt-4">
               <Text className="text-lg font-extrabold text-gray-900">
                 All Filters
               </Text>
+              
               <Text className="text-xs text-gray-500">
                 Filter your flight results
               </Text>
@@ -182,7 +183,7 @@ const FlightFilterDrawer = ({
             ))}
           </ScrollView>
 
-          <View className="absolute bottom-0 left-0 right-0 flex-row gap-3 border-t border-gray-100 bg-white px-5 py-4">
+          {/* <View className="absolute bottom-14 left-0 right-0 flex-row gap-3 border-t border-gray-100 bg-white px-5 py-4">
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={() => dispatch(resetFlightTicketFilters())}
@@ -202,7 +203,7 @@ const FlightFilterDrawer = ({
                 Apply
               </Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
       </View>
     </Modal>

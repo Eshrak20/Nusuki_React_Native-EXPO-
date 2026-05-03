@@ -199,7 +199,7 @@ const FlightSearchForm = () => {
 
     dispatch(resetFlightTicketFilters());
     dispatch(resetFlightTicketUi());
-    dispatch(startFlightSession(28));
+    dispatch(startFlightSession());
 
     router.push("/flight/tickets");
   };
