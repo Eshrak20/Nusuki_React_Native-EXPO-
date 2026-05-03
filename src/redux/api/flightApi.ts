@@ -1,10 +1,17 @@
 import { laravelApi } from "./laravelApi";
+
 import type {
   AirportsApiResponse,
   AirportsQueryParams,
   FlightSearchPayload,
-  FlightSearchResponse,
 } from "../../types/flight/types.flight";
+
+import type { FlightSearchApiResponse } from "../../types/flight/types.flightResults";
+
+import type {
+  FlightDetailApiResponse,
+  FlightDetailRequest,
+} from "../../types/flight/types.flightTicket";
 
 export const flightApi = laravelApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -20,11 +27,22 @@ export const flightApi = laravelApi.injectEndpoints({
       }),
     }),
 
-    searchFlights: builder.mutation<FlightSearchResponse, FlightSearchPayload>({
+    flightSearchTicketLists: builder.query<FlightSearchApiResponse,FlightSearchPayload>({
       query: (body) => ({
         url: "/flights/search",
         method: "POST",
         body,
+      }),
+    }),
+
+    flightDetailTicket: builder.query<FlightDetailApiResponse,FlightDetailRequest>({
+      query: ({ flight_id, search_id }) => ({
+        url: "/flights/detail",
+        method: "GET",
+        params: {
+          flight_id,
+          search_id,
+        },
       }),
     }),
   }),
@@ -33,5 +51,12 @@ export const flightApi = laravelApi.injectEndpoints({
 
 export const {
   useGetAirportsQuery,
-  useSearchFlightsMutation,
+
+  // For ticket list page
+  useFlightSearchTicketListsQuery,
+  useLazyFlightSearchTicketListsQuery,
+
+  // For detail page
+  useFlightDetailTicketQuery,
+  useLazyFlightDetailTicketQuery,
 } = flightApi;

@@ -1,23 +1,270 @@
-import { Text, View } from "react-native";
-import { StatusBar } from "expo-status-bar";
-import PageHeader from "../../../components/common/PageHeader";
+import { useCallback, useEffect, useMemo, useReducer, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { router } from "expo-router";
+import { SlidersHorizontal } from "lucide-react-native";
+import { useDispatch, useSelector } from "react-redux";
+import type { RootState } from "../../../redux/store";
+
+import FlightTicketHeader from "../../../components/flightTickets/FlightTicketHeader";
+import FlightTicketCard from "../../../components/flightTickets/FlightTicketCard";
+import FlightTicketSkeleton from "../../../components/flightTickets/FlightTicketSkeleton";
+import FlightSortBar from "../../../components/flightTickets/FlightSortBar";
+import FlightFilterDrawer from "../../../components/flightTickets/FlightFilterDrawer";
+
+import { useLazyFlightSearchTicketListsQuery } from "../../../redux/api/flightApi";
+import { buildFlightSearchPayload } from "../../../utils/buildFlightSearchPayload";
+import {
+  buildSearchResetKey,
+  getClientFilteredFlights,
+  sortFlightsClientSide,
+} from "../../../utils/flightResults.helpers";
+import {
+  cacheReducer,
+  createInitialCacheState,
+  getCachedFlights,
+} from "../../../utils/flightResults.cache";
+import { useRateLimitRetry } from "../../../hooks/useRateLimitRetry";
+import { startFlightSession } from "../../../redux/features/flightSessionSlice";
+import useSharedFlightTimer from "../../../hooks/useSharedFlightTimer";
+
+const PAGE_SIZE = 10;
 
 export default function FlightTicketsScreen() {
+  const dispatch = useDispatch();
+
+  const searchData = useSelector((state: RootState) => state.flightSearch);
+  const ticketState = useSelector((state: RootState) => state.flightTicket);
+
+  const { isExpired } = useSharedFlightTimer();
+
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const basePayload = useMemo(() => {
+    return buildFlightSearchPayload({
+      searchData,
+      page: 1,
+      size: PAGE_SIZE,
+    });
+  }, [searchData]);
+
+  const searchKey = useMemo(() => {
+    return buildSearchResetKey(basePayload);
+  }, [basePayload]);
+
+  const [cacheState, cacheDispatch] = useReducer(
+    cacheReducer,
+    createInitialCacheState(searchKey),
+  );
+
+  const [fetchFlights, fetchState] = useLazyFlightSearchTicketListsQuery();
+
+  const latestResponse = fetchState.data;
+
+  const allCachedFlights = useMemo(() => {
+    return getCachedFlights(cacheState.pageCache);
+  }, [cacheState.pageCache]);
+
+  const filteredFlights = useMemo(() => {
+    return getClientFilteredFlights({
+      flights: allCachedFlights,
+      filters: ticketState.filters,
+      selectedAirlineCode: ticketState.selectedAirlineCode,
+    });
+  }, [allCachedFlights, ticketState.filters, ticketState.selectedAirlineCode]);
+
+  const sortedFlights = useMemo(() => {
+    return sortFlightsClientSide({
+      flights: filteredFlights,
+      sortBy: ticketState.sortBy,
+      sortOrder: ticketState.sortOrder,
+    });
+  }, [filteredFlights, ticketState.sortBy, ticketState.sortOrder]);
+
+  const routeLabel =
+    latestResponse?.data?.route?.label ||
+    latestResponse?.data?.filters?.route?.label ||
+    `${basePayload.origin ?? ""} → ${basePayload.destination ?? ""}`;
+
+  const totalAvailable =
+    latestResponse?.data?.statistics?.available_flights ??
+    latestResponse?.data?.pagination?.total ??
+    cacheState.serverTotalFlights;
+
+  const isRateLimitError =
+    Boolean(fetchState.isError) &&
+    "status" in ((fetchState.error ?? {}) as { status?: number }) &&
+    (fetchState.error as { status?: number }).status === 429;
+
+  const loadPage = useCallback(
+    async (page: number) => {
+      const payload = {
+        ...basePayload,
+        page,
+        size: PAGE_SIZE,
+      };
+
+      const response = await fetchFlights(payload).unwrap();
+
+      cacheDispatch({
+        type: "MERGE_RESPONSE",
+        payload: {
+          searchKey,
+          page,
+          flights: response.data.flights ?? [],
+          totalPages: response.data.pagination?.total_pages ?? 1,
+          totalFlights:
+            response.data.statistics?.available_flights ??
+            response.data.pagination?.total ??
+            0,
+        },
+      });
+    },
+    [basePayload, fetchFlights, searchKey],
+  );
+
+  const { retryCount, maxRetryCount, isRetrying } = useRateLimitRetry({
+    isRateLimitError,
+    onRetry: () => {
+      loadPage(cacheState.serverPage).catch(() => {});
+    },
+  });
+
+  useEffect(() => {
+    dispatch(startFlightSession(28));
+  }, [dispatch, searchKey]);
+
+  useEffect(() => {
+    cacheDispatch({
+      type: "RESET",
+      payload: {
+        searchKey,
+      },
+    });
+
+    loadPage(1).catch(() => {});
+  }, [searchKey, loadPage]);
+
+  useEffect(() => {
+    if (!isExpired) return;
+
+    Alert.alert("Session expired", "Please search again to get latest fares.", [
+      {
+        text: "Search Again",
+        onPress: () => router.replace("/flight"),
+      },
+    ]);
+  }, [isExpired]);
+
+  const handleLoadMore = () => {
+    if (fetchState.isFetching) return;
+    if (cacheState.serverPage >= cacheState.serverTotalPages) return;
+
+    const nextPage = cacheState.serverPage + 1;
+
+    cacheDispatch({
+      type: "SET_SERVER_PAGE",
+      payload: {
+        searchKey,
+        page: nextPage,
+      },
+    });
+
+    loadPage(nextPage).catch(() => {});
+  };
+
+  const isInitialLoading =
+    fetchState.isLoading &&
+    cacheState.serverPage === 1 &&
+    sortedFlights.length === 0;
+
   return (
-    <View className="flex-1 bg-gray-50">
-      <StatusBar style="light" backgroundColor="#13275F" />
+    <View className="flex-1 bg-gray-100">
+      <FlightTicketHeader title={routeLabel} subtitle="Flight results" />
 
-      <PageHeader title="Flight Tickets" />
-
-      <View className="flex-1 items-center justify-center px-6">
-        <Text className="text-center text-base font-bold text-gray-700">
-          Flight search response is now logging in console.
+      <View className="flex-row items-center justify-between px-4 py-4">
+        <Text className="text-base font-extrabold text-gray-900">
+          {totalAvailable} Available Flights
         </Text>
 
-        <Text className="mt-2 text-center text-sm text-gray-500">
-          Next step: we will design ticket list, filters, sorting and pagination.
-        </Text>
+        <TouchableOpacity
+          activeOpacity={0.85}
+          onPress={() => setIsFilterOpen(true)}
+          className="flex-row items-center rounded-full bg-white px-4 py-3 shadow-sm"
+        >
+          <SlidersHorizontal size={17} color="#13275F" />
+          <Text className="ml-2 font-extrabold text-gray-800">All Filters</Text>
+        </TouchableOpacity>
       </View>
+
+      {isInitialLoading ? (
+        <View className="px-4">
+          <FlightTicketSkeleton />
+          <FlightTicketSkeleton />
+          <FlightTicketSkeleton />
+        </View>
+      ) : fetchState.isError &&
+        !isRateLimitError &&
+        sortedFlights.length === 0 ? (
+        <View className="flex-1 items-center justify-center px-6">
+          <Text className="text-center text-base font-bold text-red-500">
+            Something went wrong while loading flights.
+          </Text>
+
+          <TouchableOpacity
+            onPress={() => loadPage(cacheState.serverPage).catch(() => {})}
+            className="mt-4 rounded-2xl bg-primary px-6 py-3"
+          >
+            <Text className="font-extrabold text-white">Try Again</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        <FlatList
+          data={sortedFlights}
+          keyExtractor={(item) => item.flight_id}
+          renderItem={({ item }) => <FlightTicketCard item={item} />}
+          contentContainerClassName="px-4 pb-28"
+          showsVerticalScrollIndicator={false}
+          onEndReached={handleLoadMore}
+          onEndReachedThreshold={0.45}
+          ListFooterComponent={
+            fetchState.isFetching || isRetrying ? (
+              <View className="items-center py-5">
+                <ActivityIndicator size="small" color="#13275F" />
+
+                <Text className="mt-2 text-sm text-gray-500">
+                  {isRetrying
+                    ? `Server busy, retrying ${retryCount}/${maxRetryCount}...`
+                    : "Loading more flights..."}
+                </Text>
+              </View>
+            ) : null
+          }
+          ListEmptyComponent={
+            !fetchState.isFetching ? (
+              <View className="mt-20 items-center px-6">
+                <Text className="text-center text-gray-500">
+                  No flights found.
+                </Text>
+              </View>
+            ) : null
+          }
+        />
+      )}
+
+      <FlightSortBar />
+
+      <FlightFilterDrawer
+        visible={isFilterOpen}
+        filters={latestResponse?.data?.filters}
+        onClose={() => setIsFilterOpen(false)}
+      />
     </View>
   );
 }

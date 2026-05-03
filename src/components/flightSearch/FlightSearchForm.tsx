@@ -1,12 +1,6 @@
 import { router } from "expo-router";
 import { useMemo, useState } from "react";
-import {
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-  Text,
-  TouchableOpacity,
-} from "react-native";
+import { Alert, ScrollView, Text, TouchableOpacity } from "react-native";
 import { Search } from "lucide-react-native";
 import { useDispatch, useSelector } from "react-redux";
 
@@ -20,23 +14,27 @@ import {
   updateSegmentDate,
 } from "../../redux/features/flightSearchSlice";
 
+import {
+  resetFlightTicketFilters,
+  resetFlightTicketUi,
+} from "../../redux/features/flightTicketSlice";
+
+import { startFlightSession } from "../../redux/features/flightSessionSlice";
+
 import TripTypeSelector from "./TripTypeSelector";
 import FlightRouteFields from "./FlightRouteFields";
 import MultiCityFields from "./MultiCityFields";
+import FareTypeSelector from "./FareTypeSelector";
+import TravelerSummaryButton from "./TravelerSummaryButton";
 import AirportPickerModal from "./AirportPickerModal";
 import FlightDatePickerModal from "./FlightDatePickerModal";
 import TravelerCabinModal from "./TravelerCabinModal";
 
-import {
-  useGetAirportsQuery,
-  useSearchFlightsMutation,
-} from "../../redux/api/flightApi";
-import { buildFlightSearchPayload } from "../../utils/buildFlightSearchPayload";
+import { useGetAirportsQuery } from "../../redux/api/flightApi";
 import { formatApiDate } from "../../utils/flightDate";
 import { sortAirportsByKeyword } from "../../utils/sortAirportsByKeyword";
+
 import type { AirportItem } from "../../types/flight/types.flight";
-import TravelerSummaryButton from "./TravelerSummaryButton";
-import FareTypeSelector from "./FareTypeSelector";
 
 type AirportField =
   | "from"
@@ -57,6 +55,7 @@ const todayApi = formatApiDate(new Date());
 
 const FlightSearchForm = () => {
   const dispatch = useDispatch();
+
   const searchData = useSelector((state: RootState) => state.flightSearch);
 
   const [airportKeyword, setAirportKeyword] = useState("");
@@ -74,13 +73,12 @@ const FlightSearchForm = () => {
       keyword: airportKeyword,
     });
 
-  const airports = useMemo(
-    () =>
-      sortAirportsByKeyword(airportResponse?.data?.data ?? [], airportKeyword),
-    [airportResponse, airportKeyword],
-  );
-
-  const [searchFlights, searchFlightsState] = useSearchFlightsMutation();
+  const airports = useMemo(() => {
+    return sortAirportsByKeyword(
+      airportResponse?.data?.data ?? [],
+      airportKeyword,
+    );
+  }, [airportResponse, airportKeyword]);
 
   const openAirportPicker = (field: AirportField) => {
     setAirportKeyword("");
@@ -127,8 +125,13 @@ const FlightSearchForm = () => {
   };
 
   const getSelectedDateForPicker = () => {
-    if (activeDateField === "departure") return searchData.departureDate;
-    if (activeDateField === "return") return searchData.returnDate;
+    if (activeDateField === "departure") {
+      return searchData.departureDate;
+    }
+
+    if (activeDateField === "return") {
+      return searchData.returnDate;
+    }
 
     if (activeDateField && typeof activeDateField === "object") {
       return (
@@ -140,8 +143,9 @@ const FlightSearchForm = () => {
   };
 
   const getMinDateForPicker = () => {
-    if (activeDateField === "return")
+    if (activeDateField === "return") {
       return searchData.departureDate || todayApi;
+    }
 
     if (activeDateField && typeof activeDateField === "object") {
       const previousSegment =
@@ -165,6 +169,7 @@ const FlightSearchForm = () => {
           "Incomplete Flight Information",
           `Flight #${incompleteIndex + 1} is missing route or date.`,
         );
+
         return false;
       }
 
@@ -189,31 +194,14 @@ const FlightSearchForm = () => {
     return true;
   };
 
-  const handleSearch = async () => {
+  const handleSearch = () => {
     if (!validateSearch()) return;
 
-    const payload = buildFlightSearchPayload({
-      searchData,
-      page: 1,
-      size: 20,
-    });
+    dispatch(resetFlightTicketFilters());
+    dispatch(resetFlightTicketUi());
+    dispatch(startFlightSession(28));
 
-    console.log("FLIGHT_SEARCH_PAYLOAD", payload);
-
-    try {
-      const response = await searchFlights(payload).unwrap();
-      console.log("FLIGHT_SEARCH_RESPONSE", response);
-
-      router.push({
-        pathname: "/flight/tickets",
-        params: {
-          tripType: searchData.tripType,
-        },
-      });
-    } catch (error) {
-      console.log("FLIGHT_SEARCH_ERROR", error);
-      Alert.alert("Search failed", "Please try again.");
-    }
+    router.push("/flight/tickets");
   };
 
   return (
@@ -231,7 +219,11 @@ const FlightSearchForm = () => {
         {searchData.tripType === "multi_way" ? (
           <MultiCityFields
             onOpenAirport={openAirportPicker}
-            onOpenDate={(index) => setActiveDateField({ segmentIndex: index })}
+            onOpenDate={(index) =>
+              setActiveDateField({
+                segmentIndex: index,
+              })
+            }
           />
         ) : (
           <FlightRouteFields
@@ -242,16 +234,11 @@ const FlightSearchForm = () => {
         )}
 
         <TouchableOpacity
-          disabled={searchFlightsState.isLoading}
           activeOpacity={0.85}
           onPress={handleSearch}
           className="mt-2 flex-row items-center justify-center rounded-3xl bg-primary py-4 shadow-sm"
         >
-          {searchFlightsState.isLoading ? (
-            <ActivityIndicator size="small" color="#FFFFFF" />
-          ) : (
-            <Search size={21} color="#FFFFFF" />
-          )}
+          <Search size={21} color="#FFFFFF" />
 
           <Text className="ml-2 text-base font-extrabold text-white">
             Search Flights
