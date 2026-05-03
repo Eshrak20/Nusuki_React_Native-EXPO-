@@ -10,6 +10,8 @@ import type {
 import { UniversityApiResponse, UniversityQueryParams } from "../../types/education/types.university";
 import { CourseApiResponse, CourseQueryParams } from "../../types/education/types.course";
 import { TestPreparationQueryParams, TestPreparationsApiResponse } from "../../types/education/types.test";
+import { GetToursParams, ToursApiResponse } from "@/types/holiday/types.tour";
+import { TourPackagesListParams, TourPackagesListResponse } from "@/types/holiday/types.tourPackageLists";
 
 export const packagesApi = laravelApi.injectEndpoints({
   endpoints: (builder) => ({
@@ -62,13 +64,46 @@ export const packagesApi = laravelApi.injectEndpoints({
         },
       }),
     }),
-    getTests: builder.query<TestPreparationsApiResponse,TestPreparationQueryParams>({
+    getTests: builder.query<TestPreparationsApiResponse, TestPreparationQueryParams>({
       query: ({ page = 1, examType = "" }) => ({
         url: "/test-preparations",
         method: "GET",
         params: {
           page,
           examType,
+        },
+      }),
+    }),
+    getTours: builder.query<ToursApiResponse, GetToursParams>({
+      query: ({ page = 1, tour_type_id = "", tour_region_id = "" }) => ({
+        url: "/tours",
+        method: "GET",
+        params: {
+          page,
+          tour_type_id,
+          tour_region_id,
+        },
+      }),
+    }),
+
+    getTourPackagesList: builder.query<TourPackagesListResponse, TourPackagesListParams>({
+      query: ({
+        tour_id,
+        page = 1,
+        search = "",
+        min_price = "",
+        max_price = "",
+        duration_days = "",
+      }) => ({
+        url: "/tours-packages",
+        method: "GET",
+        params: {
+          tour_id,
+          page,
+          search,
+          min_price,
+          max_price,
+          duration_days,
         },
       }),
     }),
@@ -83,5 +118,7 @@ export const {
   useGetVisasQuery,
   useGetUniversitiesQuery,
   useGetCoursesQuery,
-  useGetTestsQuery
+  useGetTestsQuery,
+  useGetToursQuery,
+  useGetTourPackagesListQuery,
 } = packagesApi;
