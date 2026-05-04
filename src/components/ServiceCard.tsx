@@ -1,5 +1,5 @@
 import { Pressable, Text, View } from "react-native";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import {
   Plane,
   Hotel,
@@ -52,30 +52,34 @@ const colors = [
 const ServiceCard = ({ title, icon, index = 0, route }: Props) => {
   const Icon = iconMap[icon] ?? HelpCircle;
   const color = colors[index % colors.length];
-
-  const handlePress = () => {
-    if (!route) return;
-
-    router.push(route as never);
-  };
-
   return (
     <View className="mb-6 w-1/4 items-center">
-      <Pressable
-        onPress={handlePress}
-        className="items-center active:scale-95"
-      >
-        <View className="mb-2 h-11 w-11 items-center justify-center">
-          <Icon size={34} color={color} strokeWidth={1.8} />
-        </View>
+      {route ? (
+        <Link href={route} asChild>
+          <Pressable className="items-center active:scale-95">
+            <View className="mb-2 h-11 w-11 items-center justify-center">
+              <Icon size={34} color={color} strokeWidth={1.8} />
+            </View>
 
-        <Text
-          numberOfLines={2}
-          className="text-center text-[11px] font-medium text-gray-700"
-        >
-          {title}
-        </Text>
-      </Pressable>
+            <Text
+              numberOfLines={2}
+              className="text-center text-[11px] font-medium text-gray-700"
+            >
+              {title}
+            </Text>
+          </Pressable>
+        </Link>
+      ) : (
+        /* Fallback view if there is no route */
+        <View className="items-center opacity-50">
+          <View className="mb-2 h-11 w-11 items-center justify-center">
+            <Icon size={34} color={color} strokeWidth={1.8} />
+          </View>
+          <Text className="text-center text-[11px] font-medium text-gray-700">
+            {title}
+          </Text>
+        </View>
+      )}
     </View>
   );
 };

@@ -8,7 +8,7 @@ import {
   PlaneTakeoff,
 } from "lucide-react-native";
 import type { VisaItem } from "../../types/visa/types.visaPackage";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 
 type VisaCardProps = {
   item: VisaItem;
@@ -19,15 +19,6 @@ const VisaCard = ({ item }: VisaCardProps) => {
 
   const handleCallNow = () => {
     Linking.openURL("tel:09600000000");
-  };
-
-  const handleViewDetails = () => {
-    router.push({
-      pathname: "/visa/details",
-      params: {
-        id: String(item.id),
-      },
-    });
   };
 
   return (
@@ -112,7 +103,7 @@ const VisaCard = ({ item }: VisaCardProps) => {
           </View>
         </View>
 
-        <View className="mt-4 flex-row items-center justify-between rounded-2xl bg-primary px-4 py-4">
+        {/* <View className="mt-4 flex-row items-center justify-between rounded-2xl bg-primary px-4 py-4">
           <View>
             <Text className="text-xs font-medium text-white/70">
               Service Fee
@@ -127,28 +118,26 @@ const VisaCard = ({ item }: VisaCardProps) => {
               Stay {item.staying_validity} Days
             </Text>
           </View>
-        </View>
-
-        {item.imp_info ? (
-          <View className="mt-4 flex-row rounded-2xl bg-amber-50 p-3">
-            <Info size={17} color="#D97706" />
-            <Text className="ml-2 flex-1 text-xs font-medium text-amber-700">
-              {item.imp_info}
-            </Text>
-          </View>
-        ) : null}
+        </View> */}
 
         <View className="mt-5 flex-row gap-3">
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={handleViewDetails}
-            className="flex-1 rounded-2xl bg-primary py-3"
+          <Link
+            href={{
+              pathname: "/visa/details",
+              params: { id: String(item.id) },
+            }}
+            asChild
           >
-            <View className="flex-row items-center justify-center">
-              <BadgeCheck size={17} color="#FFFFFF" />
-              <Text className="ml-2 font-bold text-white">View Details</Text>
-            </View>
-          </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.85}
+              className="flex-1 rounded-2xl bg-primary py-3"
+            >
+              <View className="flex-row items-center justify-center">
+                <BadgeCheck size={17} color="#FFFFFF" />
+                <Text className="ml-2 font-bold text-white">View Details</Text>
+              </View>
+            </TouchableOpacity>
+          </Link>
 
           <TouchableOpacity
             activeOpacity={0.85}

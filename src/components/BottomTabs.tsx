@@ -1,5 +1,5 @@
 import { View, Text, Pressable } from "react-native";
-import { router, usePathname } from "expo-router";
+import { Link, router, usePathname } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const tabs = [
@@ -19,35 +19,29 @@ const BottomTabs = () => {
     >
       <View className="px-4 pb-3">
         <View className="bg-white/95 backdrop-blur-md border border-primary-light/20 rounded-3xl px-2 py-2 flex-row justify-between shadow-lg">
-          
           {tabs.map((tab) => {
             const active = pathname === tab.path;
 
             return (
-              <Pressable
-                key={tab.path}
-                onPress={() => router.push(tab.path as never)}
-                className="flex-1 items-center justify-center"
-              >
-                <View
-                  className={`px-4 py-2 rounded-2xl ${
-                    active ? "bg-primary/10" : ""
-                  }`}
-                >
-                  <Text
-                    className={`text-sm ${
-                      active
-                        ? "text-primary font-semibold"
-                        : "text-gray-400"
+              <Link href={tab.path} asChild key={tab.path}>
+                <Pressable className="flex-1 items-center justify-center">
+                  <View
+                    className={`px-4 py-2 rounded-2xl ${
+                      active ? "bg-primary/10" : ""
                     }`}
                   >
-                    {tab.label}
-                  </Text>
-                </View>
-              </Pressable>
+                    <Text
+                      className={`text-sm ${
+                        active ? "text-primary font-semibold" : "text-gray-400"
+                      }`}
+                    >
+                      {tab.label}
+                    </Text>
+                  </View>
+                </Pressable>
+              </Link>
             );
           })}
-
         </View>
       </View>
     </SafeAreaView>

@@ -9,7 +9,7 @@ const AppHeader = () => {
   return (
     <View
       style={{ width }}
-      className="h-72 overflow-hidden rounded-b-[36px] bg-primary"
+      className="h-72 overflow-hidden rounded-b-[0px] bg-primary"
     >
       <ImageBackground
         source={banner}

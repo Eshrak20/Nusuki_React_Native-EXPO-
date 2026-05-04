@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { Text, TouchableOpacity, View } from "react-native";
 import { ArrowLeft, Pencil } from "lucide-react-native";
 import FlightTimer from "./FlightTimer";
@@ -25,13 +25,13 @@ const FlightTicketHeader = ({ title, subtitle }: FlightTicketHeaderProps) => {
             </Text>
           ) : null}
         </View>
-
-        <TouchableOpacity
-          onPress={() => router.push("/flight")}
-          className="h-11 w-11 items-center justify-center rounded-2xl bg-white/10"
-        >
-          <Pencil size={19} color="#FFFFFF" />
-        </TouchableOpacity>
+        <Link href="/flight" asChild>
+          <TouchableOpacity
+            className="h-11 w-11 items-center justify-center rounded-2xl bg-white/10"
+          >
+            <Pencil size={19} color="#FFFFFF" />
+          </TouchableOpacity>
+        </Link>
       </View>
 
       <FlightTimer />

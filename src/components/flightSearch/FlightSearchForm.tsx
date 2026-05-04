@@ -236,10 +236,12 @@ const FlightSearchForm = () => {
         <TouchableOpacity
           activeOpacity={0.85}
           onPress={handleSearch}
+          // Added accessibility props for screen readers
+          accessibilityRole="button"
+          accessibilityLabel="Search Flights"
           className="mt-2 flex-row items-center justify-center rounded-3xl bg-primary py-4 shadow-sm"
         >
           <Search size={21} color="#FFFFFF" />
-
           <Text className="ml-2 text-base font-extrabold text-white">
             Search Flights
           </Text>

@@ -23,10 +23,10 @@ const PageHeader = ({
   const handleBack = () => {
     if (router.canGoBack()) {
       router.back();
-      return;
+    } else if (fallbackRoute) {
+      // We use replace so the user doesn't get stuck in a loop
+      router.replace(fallbackRoute);
     }
-
-    router.replace(fallbackRoute as never);
   };
 
   return (

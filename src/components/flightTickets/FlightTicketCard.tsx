@@ -1,5 +1,5 @@
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { ChevronRight, Gem, Plane } from "lucide-react-native";
 import type { FlightResultItem } from "../../types/flight/types.flightResults";
 import {
@@ -66,15 +66,6 @@ const FlightTicketCard = ({ item }: FlightTicketCardProps) => {
     );
   };
 
-  const handleSelect = () => {
-    router.push({
-      pathname: "/flight/ticket-detail",
-      params: {
-        flight_id: item.flight_id,
-        search_id: item.search_id,
-      },
-    });
-  };
 
   return (
     <View className="mb-4 rounded-3xl bg-white p-4 shadow-sm">
@@ -117,14 +108,24 @@ const FlightTicketCard = ({ item }: FlightTicketCardProps) => {
           </View>
         </View>
 
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={handleSelect}
-          className="flex-row items-center rounded-2xl bg-orange-500 px-5 py-3"
+        <Link
+          href={{
+            pathname: "/flight/ticket-detail",
+            params: {
+              flight_id: item.flight_id,
+              search_id: item.search_id,
+            },
+          }}
+          asChild
         >
-          <Text className="font-extrabold text-white">Select</Text>
-          <ChevronRight size={18} color="#FFFFFF" />
-        </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            className="flex-row items-center rounded-2xl bg-orange-500 px-5 py-3"
+          >
+            <Text className="font-extrabold text-white">Select</Text>
+            <ChevronRight size={18} color="#FFFFFF" />
+          </TouchableOpacity>
+        </Link>
       </View>
     </View>
   );

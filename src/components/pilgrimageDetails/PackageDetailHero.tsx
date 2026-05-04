@@ -11,7 +11,7 @@ const PackageDetailHero = ({ item, type }: PackageDetailHeroProps) => {
   const price = Number(item.price || 0).toLocaleString("en-BD");
 
   return (
-    <View className="mb-5 overflow-hidden rounded-b-[32px] bg-primary">
+    <View className="mb-5 overflow-hidden rounded-b-[0px] bg-primary">
       <ImageBackground
         source={{ uri: item.card_image }}
         resizeMode="cover"

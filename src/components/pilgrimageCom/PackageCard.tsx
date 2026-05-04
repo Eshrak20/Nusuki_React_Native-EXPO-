@@ -1,4 +1,4 @@
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { Image, Linking, Text, TouchableOpacity, View } from "react-native";
 import { PackageItem } from "../../types/hajj/types.package";
 
@@ -14,15 +14,6 @@ const PackageCard = ({ item, type }: PackageCardProps) => {
     Linking.openURL("tel:09600000000");
   };
 
-  const handleViewDetails = () => {
-    router.push({
-      pathname: "/pilgrimage/package-detail",
-      params: {
-        id: String(item.id),
-        type,
-      },
-    });
-  };
 
   return (
     <View className="mb-5 overflow-hidden rounded-3xl bg-white shadow-sm">
@@ -42,15 +33,25 @@ const PackageCard = ({ item, type }: PackageCardProps) => {
         </Text>
 
         <View className="mt-5 flex-row gap-3">
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={handleViewDetails}
-            className="flex-1 rounded-2xl bg-primary py-3"
+          <Link
+            href={{
+              pathname: "/pilgrimage/package-detail",
+              params: {
+                id: String(item.id),
+                type: type,
+              },
+            }}
+            asChild
           >
-            <Text className="text-center font-bold text-white">
-              View Details
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              activeOpacity={0.85}
+              className="flex-1 rounded-2xl bg-primary py-3"
+            >
+              <Text className="text-center font-bold text-white">
+                View Details
+              </Text>
+            </TouchableOpacity>
+          </Link>
 
           <TouchableOpacity
             activeOpacity={0.85}

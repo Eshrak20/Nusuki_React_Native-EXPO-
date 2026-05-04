@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { CalendarDays, MapPin, PlaneTakeoff } from "lucide-react-native";
 import type { TourPackageItem } from "../../types/holiday/types.tourPackageLists";
+import { Link, router } from "expo-router";
 
 type TourPackageCardProps = {
   item: TourPackageItem;
@@ -12,7 +13,6 @@ const TourPackageCard = ({ item }: TourPackageCardProps) => {
 
   const price = Number(item.price || 0).toLocaleString("en-BD");
   const shouldShowImage = Boolean(item.image) && !imageError;
-
   return (
     <View className="mb-5 overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
       <View className="h-48 bg-gray-100">
@@ -59,17 +59,23 @@ const TourPackageCard = ({ item }: TourPackageCardProps) => {
             </Text>
           </View>
 
-          <Text className="text-lg font-extrabold text-primary">
-            ৳ {price}
-          </Text>
+          <Text className="text-lg font-extrabold text-primary">৳ {price}</Text>
         </View>
 
-        <TouchableOpacity
-          activeOpacity={0.85}
-          className="mt-4 flex-row items-center justify-center rounded-2xl bg-primary py-3.5"
+        <Link
+          href={{
+            pathname: "/holiday/details",
+            params: { id: String(item.id) },
+          }}
+          asChild
         >
-          <Text className="font-extrabold text-white">View Details</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            activeOpacity={0.85}
+            className="mt-4 flex-row items-center justify-center rounded-2xl bg-primary py-3.5"
+          >
+            <Text className="font-extrabold text-white">View Details</Text>
+          </TouchableOpacity>
+        </Link>
       </View>
     </View>
   );

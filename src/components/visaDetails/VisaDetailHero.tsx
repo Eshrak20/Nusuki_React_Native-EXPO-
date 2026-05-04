@@ -16,7 +16,7 @@ const VisaDetailHero = ({ item }: VisaDetailHeroProps) => {
   const fee = Number(item.service_fee || 0).toLocaleString("en-BD");
 
   return (
-    <View className="mb-5 rounded-b-[32px] bg-primary px-4 pb-5 pt-5">
+    <View className="mb-5 rounded-b-[0px] bg-primary px-4 pb-5 pt-5">
       <View className="rounded-3xl bg-white/10 p-4">
         <View className="flex-row items-center">
           <View className="h-20 w-20 items-center justify-center overflow-hidden rounded-3xl bg-white">

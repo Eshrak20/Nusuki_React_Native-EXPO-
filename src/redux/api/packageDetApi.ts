@@ -1,6 +1,7 @@
 import { PilgrimagePackageDetailsResponse } from "@/types/pilgrimage/types.packageDetails";
 import { laravelApi } from "./laravelApi";
 import { VisaDetailsApiResponse } from "@/types/visa/types.visaDetails";
+import { HolidayPackageDetailsApiResponse } from "@/types/holiday/types.tourPackageDetails";
 
 
 export const packageDetApi = laravelApi.injectEndpoints({
@@ -27,6 +28,13 @@ export const packageDetApi = laravelApi.injectEndpoints({
       }),
     }),
 
+    getTourPackageDetails: builder.query<HolidayPackageDetailsApiResponse, number | string>({
+      query: (id) => ({
+        url: `/tours-packages/${id}`,
+        method: "GET",
+      }),
+    }),
+
   }),
 
   overrideExisting: false,
@@ -35,5 +43,6 @@ export const packageDetApi = laravelApi.injectEndpoints({
 export const {
   useGetHajjPackageDetailsQuery,
   useGetUmrahPackageDetailsQuery,
-  useGetVisaDetailsQuery
+  useGetVisaDetailsQuery,
+  useGetTourPackageDetailsQuery
 } = packageDetApi;
