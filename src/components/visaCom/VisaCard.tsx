@@ -8,6 +8,7 @@ import {
   PlaneTakeoff,
 } from "lucide-react-native";
 import type { VisaItem } from "../../types/visa/types.visaPackage";
+import { router } from "expo-router";
 
 type VisaCardProps = {
   item: VisaItem;
@@ -18,6 +19,15 @@ const VisaCard = ({ item }: VisaCardProps) => {
 
   const handleCallNow = () => {
     Linking.openURL("tel:09600000000");
+  };
+
+  const handleViewDetails = () => {
+    router.push({
+      pathname: "/visa/details",
+      params: {
+        id: String(item.id),
+      },
+    });
   };
 
   return (
@@ -131,6 +141,7 @@ const VisaCard = ({ item }: VisaCardProps) => {
         <View className="mt-5 flex-row gap-3">
           <TouchableOpacity
             activeOpacity={0.85}
+            onPress={handleViewDetails}
             className="flex-1 rounded-2xl bg-primary py-3"
           >
             <View className="flex-row items-center justify-center">
@@ -144,9 +155,7 @@ const VisaCard = ({ item }: VisaCardProps) => {
             onPress={handleCallNow}
             className="flex-1 rounded-2xl border border-primary py-3"
           >
-            <Text className="text-center font-bold text-primary">
-              Call Now
-            </Text>
+            <Text className="text-center font-bold text-primary">Call Now</Text>
           </TouchableOpacity>
         </View>
       </View>

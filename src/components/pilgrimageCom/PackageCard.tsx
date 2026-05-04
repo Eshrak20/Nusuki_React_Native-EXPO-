@@ -1,15 +1,27 @@
+import { router } from "expo-router";
 import { Image, Linking, Text, TouchableOpacity, View } from "react-native";
 import { PackageItem } from "../../types/hajj/types.package";
 
 type PackageCardProps = {
   item: PackageItem;
+  type: "hajj" | "umrah";
 };
 
-const PackageCard = ({ item }: PackageCardProps) => {
+const PackageCard = ({ item, type }: PackageCardProps) => {
   const price = Number(item.price || 0).toLocaleString("en-BD");
 
   const handleCallNow = () => {
     Linking.openURL("tel:09600000000");
+  };
+
+  const handleViewDetails = () => {
+    router.push({
+      pathname: "/pilgrimage/package-detail",
+      params: {
+        id: String(item.id),
+        type,
+      },
+    });
   };
 
   return (
@@ -32,6 +44,7 @@ const PackageCard = ({ item }: PackageCardProps) => {
         <View className="mt-5 flex-row gap-3">
           <TouchableOpacity
             activeOpacity={0.85}
+            onPress={handleViewDetails}
             className="flex-1 rounded-2xl bg-primary py-3"
           >
             <Text className="text-center font-bold text-white">
@@ -44,9 +57,7 @@ const PackageCard = ({ item }: PackageCardProps) => {
             onPress={handleCallNow}
             className="flex-1 rounded-2xl border border-primary py-3"
           >
-            <Text className="text-center font-bold text-primary">
-              Call Now
-            </Text>
+            <Text className="text-center font-bold text-primary">Call Now</Text>
           </TouchableOpacity>
         </View>
       </View>

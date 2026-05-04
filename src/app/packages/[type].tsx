@@ -116,7 +116,7 @@ export default function PackageListScreen() {
         <FlatList
           data={packages}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <PackageCard item={item} />}
+          renderItem={({ item }) => <PackageCard item={item} type={isHajj ? "hajj" : "umrah"} />}
           contentContainerClassName="px-4 py-6 pb-28"
           showsVerticalScrollIndicator={false}
           onEndReached={handleLoadMore}
