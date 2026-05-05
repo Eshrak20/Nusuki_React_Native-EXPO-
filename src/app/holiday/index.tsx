@@ -162,16 +162,25 @@ export default function HolidayToursScreen() {
           renderItem={({ item }) => (
             <TourCard item={item} onViewPackages={handleViewPackages} />
           )}
-          contentContainerClassName="px-4 py-6 pb-28"
+          // numColumns requires specific horizontal management
+          numColumns={2}
+          columnWrapperStyle={{
+            justifyContent: "space-between",
+          }}
+          contentContainerStyle={{
+            paddingHorizontal: 16,
+            paddingTop: 24,
+            paddingBottom: 100,
+          }}
           showsVerticalScrollIndicator={false}
           onEndReached={handleLoadMore}
           onEndReachedThreshold={0.5}
           ListFooterComponent={renderFooter}
           ListEmptyComponent={
             shouldShowEmpty ? (
-              <View className="mt-20 items-center px-6">
-                <Text className="text-center text-gray-500">
-                  No holiday destination found.
+              <View className="mt-20 items-center">
+                <Text className="text-gray-400 uppercase tracking-widest font-bold">
+                  No Results Found
                 </Text>
               </View>
             ) : null

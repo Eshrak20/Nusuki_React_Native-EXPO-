@@ -2,6 +2,17 @@
 npx expo start --web --port 5173
 
 
+
+
+
+
+Firebase Link : https://console.firebase.google.com/u/0/project/nusukiapp-2026/firestore/databases/-default-/data/~2Fchats~2Fsupport_user_1~2Fmessages~2FL4H6ssC0KP6UvsUNnRKq
+
+
+
+
+
+
 Firestore Database
 └── chats
     └── support_user_1
@@ -17,3 +28,5 @@ Firestore Database
                 ├── senderType: "user"
                 ├── seen: false
                 └── createdAt: timestamp
+
+
