@@ -34,10 +34,26 @@ import {
 import { useRateLimitRetry } from "../../../hooks/useRateLimitRetry";
 import { startFlightSession } from "../../../redux/features/flightSessionSlice";
 import useSharedFlightTimer from "../../../hooks/useSharedFlightTimer";
-import { resetFlightTicketFilters } from "../../../redux/features/flightTicketSlice";
+import {
+  resetFlightTicketFilters,
+  removeFlightTicketFilter,
+} from "../../../redux/features/flightTicketSlice";
 
 const PAGE_SIZE = 10;
-
+type AppliedFilterBadge = {
+  id: string;
+  label: string;
+  removePayload:
+    | { type: "refundability"; value: string }
+    | { type: "stops"; value: number }
+    | { type: "airlines"; value: string }
+    | { type: "layover_cities"; value: string }
+    | { type: "aircraft"; value: string }
+    | { type: "departure_schedule"; value: string }
+    | { type: "arrival_schedule"; value: string }
+    | { type: "price" }
+    | { type: "layover_duration" };
+};
 export default function FlightTicketsScreen() {
   const dispatch = useDispatch();
 
@@ -73,53 +89,112 @@ export default function FlightTicketsScreen() {
     return getCachedFlights(cacheState.pageCache);
   }, [cacheState.pageCache]);
 
-  const appliedFilterBadges = useMemo(() => {
+  const appliedFilterBadges = useMemo<AppliedFilterBadge[]>(() => {
     const filters = ticketState.filters;
-    const badges: string[] = [];
+    const badges: AppliedFilterBadge[] = [];
 
     filters.refundability.forEach((item) => {
-      badges.push(item === "refundable" ? "Refundable" : item);
+      badges.push({
+        id: `refundability-${item}`,
+        label: item === "refundable" ? "Refundable" : item,
+        removePayload: {
+          type: "refundability",
+          value: item,
+        },
+      });
     });
 
     filters.stops.forEach((item) => {
-      badges.push(item === 0 ? "Non Stop" : `${item} Stop`);
+      badges.push({
+        id: `stops-${item}`,
+        label: item === 0 ? "Non Stop" : `${item} Stop`,
+        removePayload: {
+          type: "stops",
+          value: item,
+        },
+      });
     });
 
     filters.airlines.forEach((item) => {
-      badges.push(`Airline: ${item}`);
+      badges.push({
+        id: `airlines-${item}`,
+        label: `Airline: ${item}`,
+        removePayload: {
+          type: "airlines",
+          value: item,
+        },
+      });
     });
 
     filters.layover_cities.forEach((item) => {
-      badges.push(`Layover: ${item}`);
+      badges.push({
+        id: `layover-city-${item}`,
+        label: `Layover: ${item}`,
+        removePayload: {
+          type: "layover_cities",
+          value: item,
+        },
+      });
     });
 
     filters.aircraft.forEach((item) => {
-      badges.push(`Aircraft: ${item}`);
+      badges.push({
+        id: `aircraft-${item}`,
+        label: `Aircraft: ${item}`,
+        removePayload: {
+          type: "aircraft",
+          value: item,
+        },
+      });
     });
 
     filters.flight_schedules.departure.forEach((item) => {
-      badges.push(`Departure: ${item}`);
+      badges.push({
+        id: `departure-${item}`,
+        label: `Departure: ${item}`,
+        removePayload: {
+          type: "departure_schedule",
+          value: item,
+        },
+      });
     });
 
     filters.flight_schedules.arrival.forEach((item) => {
-      badges.push(`Arrival: ${item}`);
+      badges.push({
+        id: `arrival-${item}`,
+        label: `Arrival: ${item}`,
+        removePayload: {
+          type: "arrival_schedule",
+          value: item,
+        },
+      });
     });
 
     if (filters.price_min !== null || filters.price_max !== null) {
-      badges.push(
-        `Price: ${filters.price_min ?? "Min"} - ${filters.price_max ?? "Max"}`,
-      );
+      badges.push({
+        id: "price-range",
+        label: `Price: ${filters.price_min ?? "Min"} - ${
+          filters.price_max ?? "Max"
+        }`,
+        removePayload: {
+          type: "price",
+        },
+      });
     }
 
     if (
       filters.layover_duration_min !== null ||
       filters.layover_duration_max !== null
     ) {
-      badges.push(
-        `Layover Time: ${filters.layover_duration_min ?? "Min"} - ${
+      badges.push({
+        id: "layover-duration",
+        label: `Layover Time: ${filters.layover_duration_min ?? "Min"} - ${
           filters.layover_duration_max ?? "Max"
         } min`,
-      );
+        removePayload: {
+          type: "layover_duration",
+        },
+      });
     }
 
     return badges;
@@ -238,7 +313,9 @@ export default function FlightTicketsScreen() {
   const handleClearFilters = () => {
     dispatch(resetFlightTicketFilters());
   };
-
+  const handleRemoveFilterBadge = (badge: AppliedFilterBadge) => {
+    dispatch(removeFlightTicketFilter(badge.removePayload));
+  };
   const isInitialLoading =
     fetchState.isLoading &&
     cacheState.serverPage === 1 &&
@@ -296,14 +373,16 @@ export default function FlightTicketsScreen() {
           >
             {appliedFilterBadges.map((badge) => (
               <View
-                key={badge}
-                className="relative flex-row items-center rounded-full border border-primary/10 bg-primary/10 px-3 py-2 mt-3 pr-7"
+                key={badge.id}
+                className="relative mt-3 flex-row items-center rounded-full border border-primary/10 bg-primary/10 px-3 py-2 pr-7"
               >
-                <Text className="text-xs font-bold text-primary">{badge}</Text>
+                <Text className="text-xs font-bold text-primary">
+                  {badge.label}
+                </Text>
 
                 <TouchableOpacity
                   activeOpacity={0.85}
-                  onPress={handleClearFilters}
+                  onPress={() => handleRemoveFilterBadge(badge)}
                   className="absolute -right-1 -top-1 h-5 w-5 items-center justify-center rounded-full bg-red-500"
                 >
                   <X size={12} color="#FFFFFF" />
@@ -369,7 +448,7 @@ export default function FlightTicketsScreen() {
         />
       )}
 
-      <FlightSortBar />
+      {/* <FlightSortBar /> */}
 
       <FlightFilterDrawer
         visible={isFilterOpen}

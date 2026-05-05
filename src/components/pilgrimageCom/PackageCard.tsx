@@ -11,9 +11,17 @@ const PackageCard = ({ item, type }: PackageCardProps) => {
   const price = Number(item.price || 0).toLocaleString("en-BD");
 
   const handleCallNow = () => {
-    Linking.openURL("tel:09600000000");
-  };
+    // Access the env variable using process.env
+    const phoneNumber = process.env.EXPO_PUBLIC_SUPPORT_PHONE;
 
+    if (phoneNumber) {
+      Linking.openURL(`tel:${phoneNumber}`);
+    } else {
+      console.warn(
+        "Support phone number is not defined in environment variables.",
+      );
+    }
+  };
 
   return (
     <View className="mb-5 overflow-hidden rounded-3xl bg-white shadow-sm">

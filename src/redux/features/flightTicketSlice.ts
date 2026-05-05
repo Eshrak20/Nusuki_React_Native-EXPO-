@@ -142,6 +142,77 @@ const flightTicketSlice = createSlice({
       state.sortOrder = "asc";
       state.selectedAirlineCode = null;
     },
+    removeFlightTicketFilter: (
+      state,
+      action: {
+        payload:
+        | { type: "refundability"; value: string }
+        | { type: "stops"; value: number }
+        | { type: "airlines"; value: string }
+        | { type: "layover_cities"; value: string }
+        | { type: "aircraft"; value: string }
+        | { type: "departure_schedule"; value: string }
+        | { type: "arrival_schedule"; value: string }
+        | { type: "price" }
+        | { type: "layover_duration" };
+      },
+    ) => {
+      const payload = action.payload;
+
+      if (payload.type === "refundability") {
+        state.filters.refundability = state.filters.refundability.filter(
+          (item) => item !== payload.value,
+        );
+      }
+
+      if (payload.type === "stops") {
+        state.filters.stops = state.filters.stops.filter(
+          (item) => item !== payload.value,
+        );
+      }
+
+      if (payload.type === "airlines") {
+        state.filters.airlines = state.filters.airlines.filter(
+          (item) => item !== payload.value,
+        );
+      }
+
+      if (payload.type === "layover_cities") {
+        state.filters.layover_cities = state.filters.layover_cities.filter(
+          (item) => item !== payload.value,
+        );
+      }
+
+      if (payload.type === "aircraft") {
+        state.filters.aircraft = state.filters.aircraft.filter(
+          (item) => item !== payload.value,
+        );
+      }
+
+      if (payload.type === "departure_schedule") {
+        state.filters.flight_schedules.departure =
+          state.filters.flight_schedules.departure.filter(
+            (item) => item !== payload.value,
+          );
+      }
+
+      if (payload.type === "arrival_schedule") {
+        state.filters.flight_schedules.arrival =
+          state.filters.flight_schedules.arrival.filter(
+            (item) => item !== payload.value,
+          );
+      }
+
+      if (payload.type === "price") {
+        state.filters.price_min = null;
+        state.filters.price_max = null;
+      }
+
+      if (payload.type === "layover_duration") {
+        state.filters.layover_duration_min = null;
+        state.filters.layover_duration_max = null;
+      }
+    },
   },
 });
 
@@ -158,6 +229,7 @@ export const {
   setSelectedAirlineCode,
   resetFlightTicketFilters,
   resetFlightTicketUi,
+  removeFlightTicketFilter
 } = flightTicketSlice.actions;
 
 export default flightTicketSlice.reducer;

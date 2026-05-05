@@ -90,7 +90,7 @@ const TestCard = ({ item }: TestCardProps) => {
             </Text>
           </View>
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             activeOpacity={0.85}
             className="mt-4 flex-row items-center justify-center rounded-2xl bg-primary py-3"
           >
@@ -99,7 +99,7 @@ const TestCard = ({ item }: TestCardProps) => {
             <Text className="ml-2 text-xs font-extrabold text-white">
               View Details
             </Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
     </View>

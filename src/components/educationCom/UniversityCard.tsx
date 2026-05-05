@@ -62,23 +62,12 @@ const UniversityCard = ({ item }: UniversityCardProps) => {
 
             <View className="mt-3 flex-row items-center">
               <MapPin size={14} color="#6B7280" />
-
               <Text
                 numberOfLines={2}
                 className="ml-1 flex-1 text-xs font-medium leading-4 text-gray-500"
               >
+                {/* <Text className="font-bold text-gray-700">{item.country}</Text>,{" "} */}
                 {item.location || item.country}
-              </Text>
-            </View>
-
-            <View className="mt-3 flex-row items-center">
-              <Globe2 size={14} color="#13275F" />
-
-              <Text
-                numberOfLines={1}
-                className="ml-1 text-xs font-bold text-primary"
-              >
-                {item.country}
               </Text>
             </View>
           </View>
@@ -86,11 +75,12 @@ const UniversityCard = ({ item }: UniversityCardProps) => {
           <TouchableOpacity
             activeOpacity={0.85}
             onPress={handleOpenWebsite}
-            className="mt-3 flex-row items-center justify-center rounded-2xl bg-primary py-3"
+            // Changed py-3 to py-2, and added self-start or px-4 to stop it from stretching full width
+            className="mt-5 flex-row items-center justify-center self-center rounded-xl bg-primary px-4 py-2"
           >
-            <ExternalLink size={15} color="#FFFFFF" />
+            <ExternalLink size={13} color="#FFFFFF" strokeWidth={2.5} />
 
-            <Text className="ml-2 text-xs font-extrabold text-white">
+            <Text className="ml-1.5 text-[11px] font-black uppercase tracking-tight text-white">
               Visit Website
             </Text>
           </TouchableOpacity>

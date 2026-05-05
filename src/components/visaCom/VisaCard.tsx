@@ -18,9 +18,17 @@ const VisaCard = ({ item }: VisaCardProps) => {
   const serviceFee = Number(item.service_fee || 0).toLocaleString("en-BD");
 
   const handleCallNow = () => {
-    Linking.openURL("tel:09600000000");
-  };
+    // Access the env variable using process.env
+    const phoneNumber = process.env.EXPO_PUBLIC_SUPPORT_PHONE;
 
+    if (phoneNumber) {
+      Linking.openURL(`tel:${phoneNumber}`);
+    } else {
+      console.warn(
+        "Support phone number is not defined in environment variables.",
+      );
+    }
+  };
   return (
     <View className="mb-5 overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
       <View className="p-4">

@@ -1,10 +1,5 @@
 import { useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Text,
-  View,
-} from "react-native";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 
 import PageHeader from "../../../components/common/PageHeader";
@@ -20,6 +15,7 @@ import { useInfinitePagination } from "../../../hooks/useInfinitePagination";
 import { useMergedPaginatedItems } from "../../../hooks/useMergedPaginatedItems";
 import { useGetCoursesQuery } from "../../../redux/api/packagesApi";
 import type { CourseItem } from "../../../types/education/types.course";
+import BottomCallCTA from "@/components/common/BottomCallCTA/BottomCallCTA";
 
 const PAGE_SIZE = 12;
 
@@ -162,6 +158,7 @@ export default function CourseListScreen() {
         onSelect={handleSelectStudyLevel}
         onClear={handleClearStudyLevel}
       />
+      <BottomCallCTA amount="7000" />
     </View>
   );
 }

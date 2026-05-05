@@ -14,6 +14,7 @@ import { useInfinitePagination } from "../../../hooks/useInfinitePagination";
 import { useMergedPaginatedItems } from "../../../hooks/useMergedPaginatedItems";
 import type { TestPreparationItem } from "../../../types/education/types.test";
 import { useGetTestsQuery } from "../../../redux/api/packagesApi";
+import BottomCallCTA from "@/components/common/BottomCallCTA/BottomCallCTA";
 
 export default function TestListScreen() {
   const [keyword, setKeyword] = useState("");
@@ -170,6 +171,7 @@ export default function TestListScreen() {
         onSelect={handleSelectExam}
         onClear={handleClearExam}
       />
+      <BottomCallCTA amount="5000" />
     </View>
   );
 }

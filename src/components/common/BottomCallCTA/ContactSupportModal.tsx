@@ -120,7 +120,7 @@ const ModalContent = ({
       <View className="gap-3">
         <TouchableOpacity onPress={onCall} activeOpacity={0.9}>
           <LinearGradient
-            colors={["#3b82f6", "#2563eb"] as const}
+            colors={["#1E3A8A", "#13275F"] as const}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             className="flex-row items-center justify-center gap-3 rounded-2xl py-4"
