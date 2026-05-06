@@ -20,6 +20,7 @@ import { useInfinitePagination } from "../../../hooks/useInfinitePagination";
 import { useMergedPaginatedItems } from "../../../hooks/useMergedPaginatedItems";
 import { useGetUniversitiesQuery } from "../../../redux/api/packagesApi";
 import type { UniversityItem } from "../../../types/education/types.university";
+import BottomCallCTA from "@/components/common/BottomCallCTA/BottomCallCTA";
 
 const PAGE_SIZE = 12;
 
@@ -193,6 +194,7 @@ export default function UniversityListScreen() {
         onSelectCountry={handleSelectCountry}
         onClear={handleClearCountry}
       />
+      <BottomCallCTA amount="150000" />
     </View>
   );
 }

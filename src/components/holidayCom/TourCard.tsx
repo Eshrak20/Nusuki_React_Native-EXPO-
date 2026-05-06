@@ -1,20 +1,19 @@
 import {
-  Dimensions,
   ImageBackground,
   Text,
   TouchableOpacity,
   View,
+  Dimensions,
 } from "react-native";
 import {
   ArrowRight,
   MapPin,
-  PlaneTakeoff,
-  Sparkles,
 } from "lucide-react-native";
 import type { TourItem } from "../../types/holiday/types.tour";
 
 const { width } = Dimensions.get("window");
-const CARD_WIDTH = (width - 48) / 2;
+// Increased gap logic: (Screen - (Horizontal Padding * 2) - Middle Gap) / 2
+const CARD_WIDTH = (width - 32 - 12) / 2; 
 
 type TourCardProps = {
   item: TourItem;
@@ -22,129 +21,60 @@ type TourCardProps = {
 };
 
 const TourCard = ({ item, onViewPackages }: TourCardProps) => {
-  const regionNames = item.regions.map((region) => region.name).join(", ");
-  const firstRegion = regionNames.split(",")[0] || "Holiday";
-
-  const visibleTourTypes = item.tour_types.slice(0, 2);
-  const extraTourTypesCount = Math.max(item.tour_types.length - 2, 0);
+  const regionName = item.regions[0]?.name || "Destination";
 
   return (
-    <View
+    <TouchableOpacity
+      activeOpacity={0.9}
+      onPress={() => onViewPackages(item)}
       style={{ width: CARD_WIDTH }}
-      className="mb-4 overflow-hidden rounded-3xl border border-gray-200 bg-white shadow-sm shadow-black/5"
+      className="mb-8" // Increased vertical gap
     >
-      <ImageBackground
-        source={{ uri: item.bg_image_url }}
-        resizeMode="cover"
-        className="h-40 w-full"
-        imageStyle={{
-          borderTopLeftRadius: 24,
-          borderTopRightRadius: 24,
-        }}
-      >
-        <View className="flex-1 justify-between bg-black/35 p-3">
-          <View className="self-start rounded-full bg-white px-3 py-1.5 shadow-sm">
-            <Text
-              numberOfLines={1}
-              className="max-w-[120px] text-[10px] font-extrabold uppercase tracking-tight text-primary"
-            >
-              {firstRegion}
-            </Text>
-          </View>
-
-          <View className="self-start flex-row items-center rounded-full bg-primary/90 px-3 py-1.5">
-            <Sparkles size={11} color="#FFFFFF" />
-            <Text className="ml-1 text-[10px] font-extrabold text-white">
-              Premium Tour
-            </Text>
-          </View>
-        </View>
-      </ImageBackground>
-
-      <View className="p-3.5">
-        <View className="min-h-[60px]">
-          <Text
-            numberOfLines={2}
-            className="text-[15px] font-extrabold leading-5 text-primary"
-          >
-            {item.display_name}
-          </Text>
-
-          <View className="mt-2 flex-row items-center">
-            <View className="h-6 w-6 items-center justify-center rounded-full bg-primary/5">
-              <MapPin size={12} color="#13275F" />
-            </View>
-
-            <Text
-              numberOfLines={1}
-              className="ml-1.5 flex-1 text-[11px] font-semibold text-gray-500"
-            >
-              {item.country_name}
-            </Text>
-          </View>
-        </View>
-
-        <View className="my-3 border-t border-dashed border-gray-300" />
-
-        <View className="min-h-[54px]">
-          <Text className="mb-2 text-[11px] font-extrabold text-primary">
-            Tour Types
-          </Text>
-
-          <View className="flex-row flex-wrap gap-1.5">
-            {visibleTourTypes.length > 0 ? (
-              <>
-                {visibleTourTypes.map((type) => (
-                  <View
-                    key={type.id}
-                    className="rounded-full border border-primary/10 bg-primary/5 px-2.5 py-1"
-                  >
-                    <Text
-                      numberOfLines={1}
-                      className="max-w-[82px] text-[10px] font-bold text-primary"
-                    >
-                      {type.name}
-                    </Text>
-                  </View>
-                ))}
-
-                {extraTourTypesCount > 0 ? (
-                  <View className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1">
-                    <Text className="text-[10px] font-extrabold text-gray-500">
-                      +{extraTourTypesCount}
-                    </Text>
-                  </View>
-                ) : null}
-              </>
-            ) : (
-              <View className="rounded-full border border-gray-200 bg-gray-50 px-2.5 py-1">
-                <Text className="text-[10px] font-bold text-gray-500">
-                  Premium Collection
-                </Text>
-              </View>
-            )}
-          </View>
-        </View>
-
-        <TouchableOpacity
-          activeOpacity={0.85}
-          onPress={() => onViewPackages(item)}
-          className="mt-4 h-11 flex-row items-center justify-between rounded-2xl border border-primary bg-white px-3.5"
+      {/* Cinematic Image Container - Sharp Edges */}
+      <View className="h-60 w-full bg-gray-200"> 
+        <ImageBackground
+          source={{ uri: item.bg_image_url }}
+          resizeMode="cover"
+          className="flex-1"
         >
-          <View className="flex-row items-center">
-            <View className="h-7 w-7 items-center justify-center rounded-full bg-primary">
-              <PlaneTakeoff size={14} color="#FFFFFF" />
+          {/* Subtle Gradient Overlay for depth */}
+          <View className="flex-1 bg-black/10 p-3 justify-between">
+            <View className="self-start bg-white px-2 py-1">
+              <Text className="text-[9px] font-black uppercase tracking-widest text-black">
+                {regionName}
+              </Text>
             </View>
-
-            <Text className="ml-2 text-xs font-extrabold text-primary">
-              View Packages
-            </Text>
           </View>
-
-          <ArrowRight size={15} color="#13275F" strokeWidth={2.7} />
-        </TouchableOpacity>
+        </ImageBackground>
       </View>
-    </View>
+
+      {/* Content Section - Minimalist */}
+      <View className="mt-3">
+        <View className="flex-row items-center opacity-60">
+          <MapPin size={10} color="#000" strokeWidth={3} />
+          <Text className="ml-1 text-[10px] font-bold uppercase tracking-tighter text-black">
+            {item.country_name}
+          </Text>
+        </View>
+
+        <Text
+          numberOfLines={2}
+          className="mt-1 text-lg font-light leading-6 text-black tracking-tight"
+          style={{ fontFamily: 'System' }} // Using thin/light weights feels more premium
+        >
+          {item.display_name.toUpperCase()}
+        </Text>
+
+        <View className="mt-3 h-[1px] w-8 bg-primary" />
+
+        <View className="mt-3 flex-row items-center justify-between">
+            <Text className="text-[11px] font-bold text-gray-400">
+                EXPLORE NOW
+            </Text>
+            <ArrowRight size={14} color="#13275F" />
+        </View>
+      </View>
+    </TouchableOpacity>
   );
 };
 
